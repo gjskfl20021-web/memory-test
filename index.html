@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-<title>20단어 기억력 테스트</title>
+<title>20단어 기억 테스트</title>
 <style>
 :root{
   --bg:#0f1020;
@@ -38,7 +38,7 @@ body{
   box-shadow:0 24px 80px rgba(0,0,0,.35);
 }
 h1,h2,h3,p{margin-top:0}
-h1{font-size:28px;margin-bottom:8px}
+h1{font-size:30px;margin-bottom:8px}
 h2{font-size:25px;margin-bottom:12px}
 p{line-height:1.55;color:var(--sub)}
 button{
@@ -53,17 +53,6 @@ button{
   cursor:pointer;
   margin-top:12px;
 }
-button.secondary{
-  background:#313653;
-}
-select,input{
-  width:100%;
-  border:0;
-  border-radius:14px;
-  padding:14px;
-  font-size:17px;
-  outline:none;
-}
 .notice{
   background:rgba(255,255,255,.08);
   border:1px solid rgba(255,255,255,.1);
@@ -73,18 +62,13 @@ select,input{
   line-height:1.7;
   color:#e8e9ff;
 }
-.config{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-  margin:16px 0;
-}
-.config label{
-  display:block;
-  font-size:13px;
-  color:var(--sub);
-  margin-bottom:7px;
-  text-align:left;
+input{
+  width:100%;
+  border:0;
+  border-radius:14px;
+  padding:14px;
+  font-size:17px;
+  outline:none;
 }
 .word{
   height:48vh;
@@ -160,7 +144,7 @@ select,input{
 .good{color:var(--accent2)!important}
 .warn{color:var(--warn)!important}
 .bad{color:var(--bad)!important}
-.small{font-size:13px;color:var(--sub)}
+.center{text-align:center}
 @media (min-width:700px){
   .grid{grid-template-columns:repeat(5,1fr)}
   .app{min-height:auto}
@@ -183,9 +167,9 @@ const WORD_POOL = [
 
 let words=[];
 let idx=0;
-let wordSec=3;
-let distractSec=30;
-let recallSec=60;
+const wordSec=3;
+const distractSec=30;
+const recallSec=60;
 let expectedCount=0;
 let recallTimer=null;
 let submitted=false;
@@ -198,45 +182,23 @@ function shuffle(arr){
 
 function renderIntro(){
   app.innerHTML=`
-    <h1>20단어 기억력 테스트</h1>
-    <p>모바일에서도 바로 쓸 수 있는 교육용 기억력·메타인지 테스트입니다.</p>
-
-    <div class="notice">
-      1. 단어 20개가 순서대로 표시됩니다.<br>
-      2. 방해 화면을 본 뒤 예상 기억 개수를 입력합니다.<br>
-      3. 제한 시간 안에 기억나는 단어를 한 칸에 하나씩 적습니다.<br>
-      4. 실제 점수와 메타인지 유형을 확인합니다.
+    <div class="center">
+      <h1>20단어 기억 테스트</h1>
+      <p>화면에 나타나는 단어를 기억해주세요.</p>
     </div>
 
-    <div class="config">
-      <div>
-        <label>단어 노출 시간</label>
-        <select id="wordSec">
-          <option value="1">1초</option>
-          <option value="2">2초</option>
-          <option value="3" selected>3초</option>
-          <option value="5">5초</option>
-        </select>
-      </div>
-      <div>
-        <label>회상 입력 시간</label>
-        <select id="recallSec">
-          <option value="30">30초</option>
-          <option value="60" selected>60초</option>
-          <option value="90">90초</option>
-          <option value="120">120초</option>
-        </select>
-      </div>
+    <div class="notice">
+      1. 단어 20개가 순서대로 나타납니다.<br>
+      2. 중간 화면을 본 뒤, 예상 기억 개수를 입력합니다.<br>
+      3. 기억나는 단어를 제한 시간 안에 적습니다.<br>
+      4. 결과를 확인합니다.
     </div>
 
     <button onclick="start()">시작하기</button>
-    <p class="small" style="margin-top:14px">팁: 교육장에서 쓰려면 이 파일을 웹에 올린 뒤 URL을 QR코드로 만들면 됩니다.</p>
   `;
 }
 
 function start(){
-  wordSec=Number(document.getElementById("wordSec").value);
-  recallSec=Number(document.getElementById("recallSec").value);
   words=shuffle(WORD_POOL).slice(0,20);
   idx=0;
   submitted=false;
@@ -251,7 +213,6 @@ function showWord(){
       <span>${idx+1}/20</span>
     </div>
     <div class="word">${words[idx]}</div>
-    <p>단어는 ${wordSec}초씩 표시됩니다.</p>
   `;
   idx++;
   setTimeout(showWord,wordSec*1000);
@@ -261,13 +222,13 @@ function distraction(){
   let sec=distractSec;
   app.innerHTML=`
     <div class="progress">
-      <span>방해 구간</span>
+      <span>잠시 쉬어가기</span>
       <span id="dTimer">${sec}초</span>
     </div>
     <div class="distract">
       <div class="emoji">🐥✨🔥</div>
-      <h2>기억하지 말고 잠깐 멍때리기</h2>
-      <p style="color:#222;font-weight:700">당신의 뇌는 지금 몰래 정리 중입니다.</p>
+      <h2>잠시만 기다려주세요</h2>
+      <p style="color:#222;font-weight:700">곧 다음 단계로 이동합니다.</p>
     </div>
   `;
   const t=setInterval(()=>{
@@ -281,9 +242,8 @@ function askCount(){
   app.innerHTML=`
     <h2>몇 개 기억날 것 같나요?</h2>
     <div class="notice">
-      아직 단어를 쓰지 마세요.<br>
-      먼저 <b>내가 맞힐 수 있을 것 같은 개수</b>를 적어주세요.<br>
-      이 값으로 메타인지 정확도를 계산합니다.
+      아직 단어를 적지 말고,<br>
+      먼저 <b>기억할 수 있을 것 같은 개수</b>를 입력해주세요.
     </div>
     <input id="count" type="number" min="0" max="20" placeholder="예: 12" inputmode="numeric">
     <button onclick="askWords()">다음</button>
@@ -304,13 +264,12 @@ function askWords(){
     <h2>기억나는 단어를 적어주세요</h2>
     <div class="timer">남은 시간 <span id="rTimer">${recallSec}</span>초</div>
     <div class="notice">
-      ✅ 순서는 상관없습니다.<br>
-      ✅ 모르는 칸은 비워두세요.<br>
-      ✅ 한 칸에 한 단어씩 적으면 됩니다.<br>
-      ✅ 시간이 끝나면 자동 제출됩니다.
+      순서는 상관없습니다.<br>
+      모르는 칸은 비워두세요.<br>
+      한 칸에 한 단어씩 적어주세요.
     </div>
     <div class="grid">${boxes}</div>
-    <button onclick="result()">바로 결과 확인</button>
+    <button onclick="result()">결과 확인</button>
   `;
   startRecallTimer();
 }
@@ -334,9 +293,9 @@ function normalize(text){
 
 function getMeta(expected,actual){
   const diff=expected-actual;
-  if(diff>=4) return ["과신형","warn","예상보다 실제 기억 개수가 적습니다. 스스로의 기억력을 조금 높게 본 편이에요."];
-  if(diff<=-4) return ["과소평가형","bad","예상보다 실제 기억 개수가 많습니다. 스스로를 낮게 본 편이에요."];
-  return ["정확형","good","예상과 실제가 꽤 비슷합니다. 자기 판단이 비교적 정확한 편이에요."];
+  if(diff>=4) return ["과신형","warn","예상보다 실제 기억 개수가 적습니다."];
+  if(diff<=-4) return ["과소평가형","bad","예상보다 실제 기억 개수가 많습니다."];
+  return ["정확형","good","예상과 실제가 비슷합니다."];
 }
 
 function result(){
